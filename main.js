@@ -29,16 +29,59 @@ quick_draw_data_set="aircraft carrier","airplane","alarm clock","ambulance","ang
 "toothpaste","tornado","tractor","traffic light","train","tree","triangle","trombone","truck","trumpet","tshirt",
 "umbrella","underwear","van","vase","violin","washing machine","watermelon","waterslide","whale","wheel","windmill";
 
-array_1=[pen,paper,book,bottle]
+random_no = Math.floor((Math.random()*quick_draw_data_set.length)+1);
 
-random_no = Math.floor((Math.random()*array_1.length)+1)
-
-Element_of_array = array_1[random_no]
+Element_of_array = quick_draw_data_set[random_no];
 
 
 var timer_counter=0;
 var timer_check=0;
 var drawn_sketch =0;
-var answer_holder=0; 
+var answer_holder=null; 
 var score=0;
 
+function updateCanvas()
+{
+    background('white');
+}
+
+function preload()
+{
+
+}
+
+function setup()
+{
+    canvas = createCanvas(280,280);
+    canvas.center();
+    background('white');
+}
+
+function draw()
+{
+    function check_sketch()
+    {
+        if(drawn_sketch == sketch)
+        {
+            answer_holder = "set";
+            score++;
+            document.getElementById("score") = score;
+            timer_counter++;
+            document.getElementById("timer") = timer_counter;
+            console.log(timer_counter);
+            
+            if(timer_counter > 400)
+            {
+                timer_counter = 0;
+                timer_check = "<html><h3>Time Completed</h3></html>";
+
+                if(timer_check == "completed"||answer_holder == "set")
+                {
+                    timer_check = 0;
+                    answer_holder = null;
+                    updateCanvas();
+                }
+            }
+        }
+    }
+}
