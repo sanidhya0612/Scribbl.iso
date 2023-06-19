@@ -33,11 +33,13 @@ random_no = Math.floor((Math.random()*quick_draw_data_set.length)+1);
 
 Element_of_array = quick_draw_data_set[random_no];
 
+sketch = Element_of_array;
+
 
 var timer_counter=0;
-var timer_check=0;
-var drawn_sketch =0;
-var answer_holder=null; 
+var timer_check="";
+var drawn_sketch="";
+var answer_holder=""; 
 var score=0;
 
 function updateCanvas()
@@ -47,7 +49,7 @@ function updateCanvas()
 
 function preload()
 {
-
+    classifier = ml5.imageClassifier('DoodleNet');
 }
 
 function setup()
@@ -55,33 +57,77 @@ function setup()
     canvas = createCanvas(280,280);
     canvas.center();
     background('white');
+    canvas.mouseReleased(classifyCanvas);
+    synth = window.SpeechSynthesis;
 }
 
 function draw()
 {
-    function check_sketch()
+    strokeWeight(12);
+    stroke(0);
+
+    if('mouseIsPressed')
+    {
+        line('pmouseX','pmouseY','mouseX','mouseY');
+    }
+
+    check_sketch()
     {
         if(drawn_sketch == sketch)
         {
+            timer_counter = 0;
             answer_holder = "set";
             score++;
-            document.getElementById("score") = score;
-            timer_counter++;
-            document.getElementById("timer") = timer_counter;
-            console.log(timer_counter);
-            
-            if(timer_counter > 400)
-            {
-                timer_counter = 0;
-                timer_check = "<html><h3>Time Completed</h3></html>";
-
-                if(timer_check == "completed"||answer_holder == "set")
-                {
-                    timer_check = 0;
-                    answer_holder = null;
-                    updateCanvas();
-                }
-            }
+            document.getElementById("score") = "Score : " +score;           
         }
     }
 }
+
+function check_sketch()
+{
+    timer_counter++;
+    document.getElementById("timer").innerHTML = "Timer : " + timer_counter;
+    console.log(timer_counter);
+
+    if(timer_counter > 400)
+{
+    timer_counter = 0;
+    timer_check = "Time Completed";
+
+    if(timer_check == "Time Completed"||answer_holder == "set")
+    {
+        timer_check = "";
+        answer_holder = "";
+        updateCanvas();
+    }
+}
+
+}
+
+
+function classifyCanvas()
+{
+    classifier.classify(canvas, gotResult);
+}
+
+function gotResult(error, results)
+{
+    if(error)
+    {
+        console.error(err);
+    }
+
+    console.log(results);
+
+    document.getElementById("Sketch_to_be_drawn").innerHTML = "Sketch To Be Drawn : " + results[0].label;
+    
+    drawn_sketch = results[0].label;
+
+    document.getElementById("Your_sketch").innerHTML = 'Your Sketch : ' + results[0].label;
+
+    document.getElementById('confidence').innerHTML = 'Confidence : ' + Math.round(results[0].confidence * 100) + '%';
+
+    utterThis = new SpeechSynthesisUtterance(results[0].label + Math.round(results[0].confidence * 100) + '%');
+    synth.speak(utterThis);
+}
+
