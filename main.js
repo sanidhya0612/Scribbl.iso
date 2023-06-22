@@ -31,10 +31,7 @@ quick_draw_data_set="aircraft carrier","airplane","alarm clock","ambulance","ang
 
 random_no = Math.floor((Math.random()*quick_draw_data_set.length)+1);
 
-Element_of_array = quick_draw_data_set[random_no];
-
-sketch = Element_of_array;
-
+sketch = random_no;
 
 var timer_counter=0;
 var timer_check="";
@@ -58,7 +55,7 @@ function setup()
     canvas.center();
     background('white');
     canvas.mouseReleased(classifyCanvas);
-    synth = window.SpeechSynthesis;
+    
 }
 
 function draw()
@@ -66,9 +63,9 @@ function draw()
     strokeWeight(12);
     stroke(0);
 
-    if('mouseIsPressed')
+    if(mouseIsPressed)
     {
-        line('pmouseX','pmouseY','mouseX','mouseY');
+        line(pmouseX,pmouseY,mouseX,mouseY);
     }
 
     check_sketch()
@@ -88,7 +85,7 @@ function check_sketch()
     timer_counter++;
     document.getElementById("timer").innerHTML = "Timer : " + timer_counter;
     
-    if(timer_counter > 400)
+    if(timer_counter > 2500)
 {
     timer_counter = 0;
     timer_check = "Time Completed";
@@ -118,15 +115,11 @@ function gotResult(error, results)
 
     console.log(results);
 
-    document.getElementById("Sketch_to_be_drawn").innerHTML = "Sketch To Be Drawn : " + results[0].label;
-    
-    drawn_sketch = results[0].label;
+    document.getElementById("Sketch_to_be_drawn").innerHTML = "Sketch To Be Drawn : "  + sketch;
 
-    document.getElementById("Your_sketch").innerHTML = 'Your Sketch : ' + results[0].label;
+    document.getElementById("your_sketch").innerHTML = 'Your Sketch : ' + results[0].label;
 
     document.getElementById('confidence').innerHTML = 'Confidence : ' + Math.round(results[0].confidence * 100) + '%';
 
-    utterThis = new SpeechSynthesisUtterance(results[0].label + Math.round(results[0].confidence * 100) + '%');
-    synth.speak(utterThis);
 }
 
